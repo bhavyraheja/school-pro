@@ -51,14 +51,14 @@ export default function StudentAdmissionTabs() {
                 Bulk Student Admission
               </TabsTrigger>
             </TabsList>
-            <Card className="border-t-4 border-blue-600 shadow-lg">
+            <Card className="border-t-4 border-blue-600 shadow">
               <CardContent className="p-6">
-                <TabsContent value="single" className="mt-6">
-                <InfoBanner message="Please Make Sure You have already Create the Parent, Class and Stream for the Student" type="warning"/>
-      
+                <TabsContent value="single" className="mt-0">
+                  <InfoBanner message="Please Make Sure You have already Create the Parent, Class and Stream for the Student" type="warning" />
+
                   <SingleStudentForm />
                 </TabsContent>
-                <TabsContent value="bulk" className="mt-6">
+                <TabsContent value="bulk" className="mt-0">
                   <BulkStudentForm />
                 </TabsContent>
               </CardContent>
