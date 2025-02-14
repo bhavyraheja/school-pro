@@ -98,34 +98,45 @@ export default function AppSidebar() {
           items: [
             {
               title: "Student Directory",
-              url: "/students/directory",
+              url: "/dashboard/students",
             },
             {
-              title: "Enrollment",
-              url: "/students/enrollment",
+              title: "Fees",
+              url: "/dashboard/students/fees",
+            },
+            {
+              title: "Student Ids",
+              url: "/dashboard/students/ids",
             },
             {
               title: "Attendance",
-              url: "/students/attendance",
+              url: "/dashboard/students/attendance",
+            },
+          ],
+        },
+        {
+          title: "Users",
+          url: "/dashboard/users",
+          icon: Users,
+          items: [
+            {
+              title: "Parents",
+              url: "/dashboard/users/parents",
             },
             {
-              title: "Performance",
-              url: "/students/performance",
+              title: "Secretary",
+              url: "/dashboard/users/secretary",
             },
           ],
         },
         {
           title: "Academics",
-          url: "/academics",
+          url: "/dashboard/academics",
           icon: GraduationCap,
           items: [
             {
-              title: "Curriculum",
-              url: "/academics/curriculum",
-            },
-            {
-              title: "Timetable",
-              url: "/academics/timetable",
+              title: "Classes and Streams",
+              url: "/dashboard/academics/classes",
             },
             {
               title: "Examinations",
