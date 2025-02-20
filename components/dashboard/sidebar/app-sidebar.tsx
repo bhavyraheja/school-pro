@@ -18,6 +18,7 @@ import {
     Frame,
     GalleryVerticalEnd,
     GraduationCap,
+    Key,
     LayoutDashboard,
     LogOut,
     Map,
@@ -310,6 +311,17 @@ export default function AppSidebar() {
             {
               title: "Backup & Security",
               url: "/settings/security",
+            },
+          ],
+        },
+        {
+          title: "Admin Only",
+          url: "/dashboard/admin",
+          icon: Key,
+          items: [
+            {
+              title: "Contacts",
+              url: "/dashboard/admin/contacts",
             },
           ],
         },

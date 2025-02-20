@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -22,16 +21,18 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { StreamCreateProps } from "@/types/types";
+import { createStream } from "@/actions/classes";
 
 export type StreamProps = {
     name: string
 }
 export default function StreamForm({
-    userId,
+    classId,
     initialContent,
     editingId,
 }: {
-    userId?: string;
+    classId: string;
     initialContent?: string;
     editingId?: string;
 }) {
@@ -40,16 +41,16 @@ export default function StreamForm({
         handleSubmit,
         reset,
         formState: { errors },
-    } = useForm<StreamProps>({
+    } = useForm<StreamCreateProps>({
         defaultValues: {
-            name: initialContent || "",
+            title: initialContent || "",
         },
     });
 
     const [loading, setLoading] = useState(false);
 
-    async function saveFolder(data: StreamProps) {
-        // data.userId = userId;
+    async function saveStream(data: StreamCreateProps) {
+        data.classId = classId;
         try {
             setLoading(true);
             if (editingId) {
@@ -57,9 +58,10 @@ export default function StreamForm({
                 // setLoading(false);
                 // toast.success("Updated Successfully!");
             } else {
-                // await createFolder(data);
-                // setLoading(false);
-                // toast.success("Successfully Created!");
+                const res = await createStream(data);
+                setLoading(false);
+                toast.success("Successfully Created!");
+                reset();
             }
         } catch (error) {
             setLoading(false);
@@ -95,7 +97,7 @@ export default function StreamForm({
                 Please Write your Comment here, with respect
               </DialogDescription> */}
                             </DialogHeader>
-                            <form className="" onSubmit={handleSubmit(saveFolder)}>
+                            <form className="" onSubmit={handleSubmit(saveStream)}>
                                 <div className="">
                                     <div className="space-y-3">
                                         <div className="grid gap-3">
@@ -103,7 +105,7 @@ export default function StreamForm({
                                                 register={register}
                                                 errors={errors}
                                                 label=""
-                                                name="name"
+                                                name="title"
                                                 icon={Check}
                                             />
                                             

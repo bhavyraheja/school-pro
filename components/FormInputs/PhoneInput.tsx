@@ -1,43 +1,78 @@
 import { cn } from "@/lib/utils";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ArrowDown, CircleHelp } from "lucide-react";
+import { CircleHelp } from "lucide-react";
 import countries from "@/countries";
+import Select from "react-tailwindcss-select";
 
-type PhoneInputProps = {
+type TextInputProps = {
   register: any;
+  setPhoneCode: any;
   errors: any;
   label: string;
+  type?: string;
   name: string;
-  phoneCode: string;
   toolTipText?: string;
-  setValue?: (name: string, value: any) => void;
+  unit?: string;
+  placeholder?: string;
+  icon?: any;
 };
-
 export default function PhoneInput({
   register,
   errors,
   label,
+  type = "text",
   name,
-  phoneCode,
   toolTipText,
-  setValue,
-}: PhoneInputProps) {
-  const [search, setSearch] = useState("");
-  const [selectedCountry, setSelectedCountry] = useState(countries[0]);
-  const [showDropdown, setShowDropdown] = useState(false);
-
-  const handleCountrySelect = (country: any) => {
+  unit,
+  icon,
+  placeholder,
+  setPhoneCode,
+}: TextInputProps) {
+  const Icon = icon;
+  const initialCountryCode = "UG";
+  const modifiedCountries = countries.map((country) => {
+    return {
+      value: country.value,
+      label: `${country.countryCode} ${country.phoneCode}`,
+      phoneCode: country.phoneCode,
+      currencyCode: country.currencyCode,
+      countryCode: country.countryCode,
+      flag: country.flag,
+    };
+  });
+  const initialCountry = modifiedCountries.find(
+    (item) => item.countryCode === initialCountryCode
+  );
+  const [selectedCountry, setSelectedCountry] = useState<any>(initialCountry);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  console.log(initialCountry);
+  const handleCountryChange = (country=selectedCountry) => {
     setSelectedCountry(country);
-    setShowDropdown(false);
-    if (setValue) {
-      setValue(phoneCode, country.phoneCode); // Update phone code value in the form
-    }
+    setPhoneCode(country.phoneCode);
+    console.log(country);
+  };
+  useEffect(() => {
+    setPhoneCode(selectedCountry.phoneCode);
+  },[])
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const cleanValue = value.replace(/\D/g, "");
+    setPhoneNumber(cleanValue);
+    //Update the hidden input 
+    const fullNumber = `${selectedCountry.phoneCode}${cleanValue}`;
+    register(name).onChange({
+      target: {
+        name,
+        value: fullNumber,
+      },
+    });
   };
 
   return (
@@ -62,60 +97,50 @@ export default function PhoneInput({
         )}
       </div>
       <div className="mt-2">
-        <div className="relative flex rounded-md shadow-sm border border-gray-300 focus-within:ring-2 focus-within:ring-indigo-600">
-          {/* Country Code Dropdown */}
-          <div className="relative">
-            <button
-              type="button"
-              className="bg-gray-100 border-r px-3 py-2 rounded-l-md text-sm flex items-center space-x-2 font-normal hover:bg-gray-200 transition text-gray-700"
-              onClick={() => setShowDropdown(!showDropdown)}
-            >
-              <span className="flex items-center space-x-1">
-                <span>{selectedCountry.value}</span>
-                <span>{selectedCountry.phoneCode}</span>
-              </span>
-              <ArrowDown className="w-4 h-4 text-gray-600" />
-            </button>
-            {showDropdown && (
-              <div className="absolute left-0 top-full bg-white border rounded-md shadow-lg w-56 z-10 max-h-60 overflow-y-auto">
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="px-3 py-2 text-sm w-full border-b focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+        <div className="flex gap-2">
+          <div className="w-32">
+            <div className="">
+              <div className="flex items-center space-x-2">
+                <Select
+                  isSearchable
+                  primaryColor="blue"
+                  value={selectedCountry}
+                  onChange={handleCountryChange}
+                  options={modifiedCountries}
+                  placeholder={label}
                 />
-                <ul className="max-h-48 overflow-y-auto">
-                  {countries
-                    .filter((c) => c.label.toLowerCase().includes(search.toLowerCase()))
-                    .map((country) => (
-                      <li
-                        key={country.value}
-                        className="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm font-normal flex items-center space-x-2 text-gray-700"
-                        onClick={() => handleCountrySelect(country)}
-                      >
-                        <span>{country.value}</span>
-                        <span className="text-gray-600">{country.phoneCode}</span>
-                      </li>
-                    ))}
-                </ul>
               </div>
-            )}
+            </div>
           </div>
 
-          {/* Phone Number Input */}
-          <input
-            id={name}
-            type="text"
-            {...register(name, { required: true })}
-            className={cn(
-              "block w-full px-3 py-2 rounded-r-md border-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm",
-              errors[name] && "border-red-500"
+          <div className="relative rounded-md flex-1">
+            {icon && (
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <Icon className="text-slate-300 w-4 h-4" />
+              </div>
             )}
-            placeholder="Phone number"
-          />
+            <input
+              id={name}
+              type="number"
+              {...register(`${name}`, { required: true })}
+              className={cn(
+                "block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 text-sm",
+                (errors[`${name}`] && "focus:ring-red-500 pl-8") ||
+                (icon && "pl-8")
+              )}
+              placeholder={placeholder || label}
+            />
+            {unit && (
+              <p className="bg-white py-2 px-3 rounded-tr-md rounded-br-md absolute inset-y-0 right-1 my-[2px] flex items-center">
+                {unit}
+              </p>
+            )}
+          </div>
         </div>
-        {errors[name] && <span className="text-xs text-red-600">{label} is required</span>}
+        {errors[name] && (
+          <span className="text-xs text-red-600">{label} is required</span>
+        )}
+
       </div>
     </div>
   );

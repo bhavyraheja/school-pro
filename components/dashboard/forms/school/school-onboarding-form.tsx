@@ -1,43 +1,25 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import FormHeader from "../FormHeader";
-import FormFooter from "../FormFooter";
 import TextInput from "@/components/FormInputs/TextInput";
-import TextArea from "@/components/FormInputs/TextAreaInput";
 import ImageInput from "@/components/FormInputs/ImageInput";
 import toast from "react-hot-toast";
-import PasswordInput from "@/components/FormInputs/PasswordInput";
-import FormSelectInput from "@/components/FormInputs/FormSelectInput";
-import countries from "@/countries";
 import SubmitButton from "@/components/FormInputs/SubmitButton";
 import { Send } from "lucide-react";
+import { createSchool } from "@/actions/schools";
 
 
 export type SelectOptionProps = {
   label: string;
   value: string;
 };
-type ParentFormProps = {
-  editingId?: string | undefined;
-  initialData?: any | undefined | null;
-};
-export type StudentPops = {
+
+export type SchoolProps = {
   name: string;
-  email: string;
-  password: string;
-  imageUrl: string;
+  logo: string;
 }
 export default function SchoolOnboardingForm() {
 
@@ -46,7 +28,7 @@ export default function SchoolOnboardingForm() {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<StudentPops>({
+  } = useForm<SchoolProps>({
     defaultValues: {
       name: "",
     },
@@ -57,16 +39,16 @@ export default function SchoolOnboardingForm() {
   const initialImage = "/images/logo.png";
   const [imageUrl, setImageUrl] = useState(initialImage);
 
-  async function saveStudent(data: StudentPops) {
+  async function saveStudent(data: SchoolProps) {
     try {
       setLoading(true);
-      data.imageUrl = imageUrl;
-      console.log(data)
-      // await createCategory(data);
-      // setLoading(false);
-      // toast.success("Successfully Created!");
+      data.logo = imageUrl;
+      console.log(data);
+      const res = await createSchool(data);
+      console.log(res);
+      setLoading(false);
+      toast.success("Successfully Created!");
       // reset(); 
-      // setImageUrl("/placeholder.svg");
       // router.push("/dashboard/categories");
     } catch (error) {
       setLoading(false);
@@ -74,7 +56,6 @@ export default function SchoolOnboardingForm() {
     }
   }
 
-  console.log(status);
 
   return (
     <form className="" onSubmit={handleSubmit(saveStudent)}>

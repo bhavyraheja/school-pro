@@ -10,6 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import ClassForm from "./forms/academics/class-form"
 import StreamForm from "./forms/academics/stream-form"
+import { Class } from "@/types/types"
+import Image from "next/image"
 
 interface ClassItem {
     id: number;
@@ -45,8 +47,9 @@ const sections: SectionsData = {
     ],
 }
 
-export default function ClassListing() {
-    const [selectedClass, setSelectedClass] = useState<number>(classes[0]?.id || 5);
+export default function ClassListing({ classes }: { classes: Class[] }) {
+    const [selectedClass, setSelectedClass] = useState<string>("");
+    const streams = classes.find((c) => c.id === selectedClass)?.streams ||[]
 
     return (
         <div className="grid lg:grid-cols-[280px_1fr] h-[calc(100vh-2rem)] max-h-[calc(100vh-2rem)] gap-2 p-4 pt-2">
@@ -80,13 +83,13 @@ export default function ClassListing() {
                                     onClick={() => setSelectedClass(classItem.id)}
                                     className="flex flex-col items-start gap-1 text-left"
                                 >
-                                    <div className="flex w-full items-center justify-between">
-                                        <span className="font-medium">{classItem.name}</span>
-                                        <span className="text-xs">{classItem.sections} sections</span>
+                                    <div className="flex w-full items-center justify-between gap-2">
+                                        <span className="font-medium">{classItem.title}</span>
+                                        <span className="text-xs">{classItem.streams.length} streams</span>
                                     </div>
                                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                         <Users className="h-3 w-3" />
-                                        {classItem.totalStudent} students
+                                        40 students
                                     </div>
                                 </button>
 
@@ -125,56 +128,91 @@ export default function ClassListing() {
             </div>
 
             {/* Main Content */}
-            <div className="flex flex-col gap-2 rounded-lg border bg-card">
-                <div className="flex items-center justify-between gap-2 px-4 py-2 border-b">
-                    <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <ChevronLeft className="h-4 w-4" />
-                            <span className="sr-only">Go back</span>
-                        </Button>
-                        <div>
-                            <h2 className="text-lg font-semibold">
-                                {classes.find((c) => c.id === selectedClass)?.name}
-                            </h2>
-                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                                <span>Classes</span>
-                                <span>/</span>
-                                <span>{classes.find((c) => c.id === selectedClass)?.name}</span>
+            {selectedClass ? (
+                <div className="flex flex-col gap-2 rounded-lg border bg-card">
+                    <div className="flex items-center justify-between gap-2 px-4 py-2 border-b">
+                        <div className="flex items-center gap-2">
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <ChevronLeft className="h-4 w-4" />
+                                <span className="sr-only">Go back</span>
+                            </Button>
+                            <div>
+                                <h2 className="text-lg font-semibold">
+                                    {classes.find((c) => c.id === selectedClass)?.title}
+                                </h2>
+                                <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                                    <span>Classes</span>
+                                    <span>/</span>
+                                    <span>{classes.find((c) => c.id === selectedClass)?.title}</span>
+                                </div>
                             </div>
                         </div>
+                        <StreamForm classId={selectedClass} />
                     </div>
-                    <StreamForm />
-                </div>
 
-                <div className="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {sections[selectedClass]?.map((section) => (
-                        <Card key={section.name}>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-lg">{section.name}</CardTitle>
-                                <CardDescription>
-                                    Class Teacher: {section.classTeacher}
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex items-center justify-between text-sm text-muted-foreground">
-                                    <div className="flex items-center gap-2">
+                    {streams.length > 0 ? (
+                        <div className="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {streams.map((section) => (
+                            <Card key={section.title}>
+                                <CardHeader className="pb-2">
+                                    <div className="flex items-center justify-between">
+                                        <CardTitle className="text-lg">{section.title}</CardTitle>
+                                        <div className="flex items-center gap-1">
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="h-7 w-7">
+                                                            <Pencil className="h-3 w-3" />
+                                                            <span className="sr-only">Edit Section</span>
+                                                        </Button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p>Edit Section</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="h-7 w-7">
+                                                            <Trash2 className="h-3 w-3" />
+                                                            <span className="sr-only">Delete Section</span>
+                                                        </Button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p>Delete Section</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                        </div> 
+                                    </div>
+                                    <CardDescription>
+                                        Class Teacher: JB web developer
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="flex items-center gap-2  text-sm text-muted-foreground">
                                         <Users className="h-4 w-4" />
-                                        {section.students} students
+                                        40 students
                                     </div>
-                                    <div className="flex items-center gap-1">
-                                        <Button variant="ghost" size="icon" aria-label="Edit Section">
-                                            <Pencil className="h-4 w-4" />
-                                        </Button>
-                                        <Button variant="ghost" size="icon" aria-label="Delete Section">
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )) || <p className="text-muted-foreground">No sections available for this class.</p>}
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                    ): (
+                        <div className="flex items-center min-h-96 justify-center">
+                            <div className="flex flex-col items-center justify-center">
+                                <Image src={"/empty.png"} alt="empty" width={512} height={512} className="w-36"/>
+                                <p>No Streams</p>
+                            </div>
+                        </div>
+                    ) }
                 </div>
-            </div>
+            ) : (
+                <div className="">
+                    <p>Select the class to see the Details</p>
+                </div>
+            )}
         </div>
     )
 }

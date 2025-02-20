@@ -22,6 +22,9 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { title } from "process";
+import { createClass } from "@/actions/classes";
+import { ClassCreateProps } from "@/types/types";
 
 export type ClassProps = {
     name: string
@@ -40,15 +43,15 @@ export default function ClassForm({
         handleSubmit,
         reset,
         formState: { errors },
-    } = useForm<ClassProps>({
+    } = useForm<ClassCreateProps>({
         defaultValues: {
-            name: initialContent || "",
+            title: initialContent || "",
         },
     });
 
     const [loading, setLoading] = useState(false);
 
-    async function saveFolder(data: ClassProps) {
+    async function saveClass(data: ClassCreateProps) {
         // data.userId = userId;
         try {
             setLoading(true);
@@ -57,9 +60,10 @@ export default function ClassForm({
                 // setLoading(false);
                 // toast.success("Updated Successfully!");
             } else {
-                // await createFolder(data);
-                // setLoading(false);
-                // toast.success("Successfully Created!");
+                const res = await createClass(data);
+                setLoading(false);
+                toast.success("Successfully Created!");
+                reset();
             }
         } catch (error) {
             setLoading(false);
@@ -95,7 +99,7 @@ export default function ClassForm({
                 Please Write your Comment here, with respect
               </DialogDescription> */}
                             </DialogHeader>
-                            <form className="" onSubmit={handleSubmit(saveFolder)}>
+                            <form className="" onSubmit={handleSubmit(saveClass)}>
                                 <div className="">
                                     <div className="space-y-3">
                                         <div className="grid gap-3">
@@ -103,13 +107,9 @@ export default function ClassForm({
                                                 register={register}
                                                 errors={errors}
                                                 label=""
-                                                name="name"
+                                                name="title"
                                                 icon={Check}
                                             />
-                                            {/* <IconInput
-                      onIconSelect={setSelectedIcon}
-                      selectedIcon={selectedIcon}
-                    /> */}
                                         </div>
                                     </div>
                                     <div className="py-3">

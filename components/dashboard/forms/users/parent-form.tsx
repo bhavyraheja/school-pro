@@ -31,10 +31,17 @@ type ParentFormProps = {
   editingId?: string | undefined;
   initialData?: any | undefined | null;
 };
-export type StudentPops = {
-  name: string;
+export type ParentProps = {
+  title: string;
+  firstname: string;
+  lastname: string;
+  relationship: string;
   email: string;
-  password: string;
+  NIN: string;
+  gender: string; 
+  dob: string;
+  phone: string;
+  nationality: string;
   imageUrl: string;
 }
 export default function ParentForm({
@@ -97,28 +104,6 @@ export default function ParentForm({
   ]
   const [selectedMethod, setSelectedMethod] = useState<any>(null);
 
-  //section/streams
-  const streams = [
-    {
-      label: "S1A",
-      value: "1234566"
-    },
-    {
-      label: "S1B",
-      value: "1234566"
-    },
-    {
-      label: "S2A",
-      value: "12345678"
-    },
-    {
-      label: "S2B",
-      value: "12345678"
-    },
-
-  ]
-  const [selectedStream, setSelectedStream] = useState<any>(null);
-
   //gender
   const genders = [
     {
@@ -138,34 +123,13 @@ export default function ParentForm({
   const initialCountry = countries.find((item) => item.countryCode === initialCountryCode);
   const [selectedNationality, setSelectedNationality] = useState<any>(initialCountry);
 
-  //Religion
-  const religions = [
-    {
-      label: "Roman Catholic",
-      value: "Catholic"
-    },
-    {
-      label: "Anglican",
-      value: "Anglican"
-    },
-    {
-      label: "Islam",
-      value: "Islam"
-    },
-
-  ]
-  const [selectedReligion, setSelectedReligion] = useState<any>(null);
-
-
-
-
 
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<StudentPops>({
+  } = useForm<ParentProps>({
     defaultValues: {
       name: "",
     },
@@ -176,7 +140,7 @@ export default function ParentForm({
   const initialImage = initialData?.imageUrl || "/images/student.png";
   const [imageUrl, setImageUrl] = useState(initialImage);
 
-  async function saveStudent(data: StudentPops) {
+  async function saveStudent(data: ParentProps) {
     try {
       setLoading(true);
       data.imageUrl = imageUrl;
@@ -282,14 +246,14 @@ export default function ParentForm({
               />
 
             </div>
-            <div className="grid md:grid-cols-2  lg:grid-cols-3 gap-3">
-              <TextInput
+            <div className="grid md:grid-cols-2  lg:grid-cols-2 gap-3">
+              {/* <TextInput
                 register={register}
                 errors={errors}
                 label="Phone"
                 name="phone"
                 type="tel"
-              />
+              /> */}
               <TextInput
                 register={register}
                 errors={errors}

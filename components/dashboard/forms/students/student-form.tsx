@@ -1,14 +1,4 @@
 "use client";
-
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -21,7 +11,7 @@ import toast from "react-hot-toast";
 import PasswordInput from "@/components/FormInputs/PasswordInput";
 import FormSelectInput from "@/components/FormInputs/FormSelectInput";
 import countries from "@/countries";
-import InfoBanner from "@/components/info-banner";
+import { Class } from "@/types/types";
 
 
 export type SelectOptionProps = {
@@ -31,6 +21,7 @@ export type SelectOptionProps = {
 type SingleStudentFormProps = {
   editingId?: string | undefined;
   initialData?: any | undefined | null;
+  classes: Class[];
 };
 export type StudentPops = {
   name: string;
@@ -41,6 +32,7 @@ export type StudentPops = {
 export default function SingleStudentForm({
   editingId,
   initialData,
+  classes
 }: SingleStudentFormProps) {
 
   //parents
@@ -58,39 +50,22 @@ export default function SingleStudentForm({
   const [selectedParent, setSelectedParent] = useState<any>(null);
 
   //class
-  const classes = [
-    {
-      label: "S1",
-      value: "1234566"
-    },
-    {
-      label: "S2",
-      value: "12345678"
-    },
-
-  ]
-  const [selectedClass, setSelectedClass] = useState<any>(null);
-
+  const classOptions = classes.map((item)=>{
+    return{
+      label:item.title,
+      value:item.id,
+    }
+  })
+  const [selectedClass, setSelectedClass] = useState<any>(classOptions[0]);
+  const classId = selectedClass.value??""
+  const streams = classes.find((item)=>item.id===classId)?.streams||[]
   //section/streams
-  const streams = [
-    {
-      label: "S1A",
-      value: "1234566"
-    },
-    {
-      label: "S1B",
-      value: "1234566"
-    },
-    {
-      label: "S2A",
-      value: "12345678"
-    },
-    {
-      label: "S2B",
-      value: "12345678"
-    },
-
-  ]
+  const streamsOptions = streams.map((item)=>{
+    return{
+      label:item.title,
+      value:item.id,
+    }
+  })
   const [selectedStream, setSelectedStream] = useState<any>(null);
 
   //gender
@@ -223,7 +198,7 @@ export default function SingleStudentForm({
               />
               <FormSelectInput
                 label="Class"
-                options={classes}
+                options={classOptions}
                 option={selectedClass}
                 setOption={setSelectedClass}
                 toolTipText="Add New Class"
@@ -231,7 +206,7 @@ export default function SingleStudentForm({
               />
               <FormSelectInput
                 label="Stream/Section"
-                options={streams}
+                options={streamsOptions}
                 option={selectedStream}
                 setOption={setSelectedStream}
                 toolTipText="Add New Stream"

@@ -1,51 +1,27 @@
-"use client"
-
-import { useSearchParams, useRouter } from "next/navigation"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent} from "@/components/ui/card"
 import { UserPlus, Users } from "lucide-react"
-import { useEffect, useState } from "react"
 import SingleStudentForm from "@/components/dashboard/forms/students/student-form"
 import BulkStudentForm from "@/components/dashboard/forms/students/bulk-student-form"
 import InfoBanner from "@/components/info-banner"
+import { getAllClasses } from "@/actions/classes"
 
-export default function StudentAdmissionTabs() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [activeTab, setActiveTab] = useState<string>("single")
-
-  useEffect(() => {
-    const tab = searchParams.get("tab")
-    if (tab === "single" || tab === "bulk") {
-      setActiveTab(tab)
-    }
-  }, [searchParams])
-
-  const handleTabChange = (value: string) => {
-    setActiveTab(value)
-    router.push(`?tab=${value}`, { scroll: false })
-  }
-
+export default async function AdmissionTabs() {
+  const classes = await getAllClasses() || []
   return (
-    <div className="w-full max-w-6xl mx-auto p-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Student Admission</CardTitle>
-          <CardDescription className="text-center">Choose between single or bulk student admission</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+    <div className="w-full max-w-5xl mx-auto p-6">
+          <Tabs defaultValue="single" className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-8 ">
               <TabsTrigger
                 value="single"
-                className="flex items-center justify-center data-[state=active]:bg-blue-500 data-[state=active]:text-white"
+                className="flex items-center justify-center data-[state=active]:bg-blue-500 data-[state=active]:text-white transition-all duration-300 ease-in-out"
               >
-                <UserPlus className="w-4 h-4 mr-2" />
+                <UserPlus className="w-5 h-5" />
                 Single Student Admission
               </TabsTrigger>
               <TabsTrigger
                 value="bulk"
-                className="flex items-center justify-center data-[state=active]:bg-blue-500 data-[state=active]:text-white"
+                className="flex items-center justify-center data-[state=active]:bg-blue-500 data-[state=active]:text-white transition-all duration-300 ease-in-out"
               >
                 <Users className="w-4 h-4 mr-2" />
                 Bulk Student Admission
@@ -56,7 +32,7 @@ export default function StudentAdmissionTabs() {
                 <TabsContent value="single" className="mt-0">
                   <InfoBanner message="Please Make Sure You have already Create the Parent, Class and Stream for the Student" type="warning" />
 
-                  <SingleStudentForm />
+                  <SingleStudentForm  classes={classes}/>
                 </TabsContent>
                 <TabsContent value="bulk" className="mt-0">
                   <BulkStudentForm />
@@ -64,8 +40,6 @@ export default function StudentAdmissionTabs() {
               </CardContent>
             </Card>
           </Tabs>
-        </CardContent>
-      </Card>
     </div>
   )
 }
