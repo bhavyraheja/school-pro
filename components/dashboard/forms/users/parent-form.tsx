@@ -1,14 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -21,6 +12,7 @@ import toast from "react-hot-toast";
 import PasswordInput from "@/components/FormInputs/PasswordInput";
 import FormSelectInput from "@/components/FormInputs/FormSelectInput";
 import countries from "@/countries";
+import { createParent } from "@/actions/parents";
 
 
 export type SelectOptionProps = {
@@ -33,8 +25,8 @@ type ParentFormProps = {
 };
 export type ParentProps = {
   title: string;
-  firstname: string;
-  lastname: string;
+  firstName: string;
+  lastName: string;
   relationship: string;
   email: string;
   NIN: string;
@@ -42,7 +34,12 @@ export type ParentProps = {
   dob: string;
   phone: string;
   nationality: string;
+  whatsapNo: string;
   imageUrl: string;
+  contactMethod: string;
+  occupation: string;
+  address: string;
+  password: string;
 }
 export default function ParentForm({
   editingId,
@@ -83,7 +80,7 @@ export default function ParentForm({
     },
 
   ]
-  const [selectedTitle, setSelectedTitle] = useState<any>(null);
+  const [selectedTitle, setSelectedTitle] = useState<any>(titles[0]);
 
 
   //class
@@ -102,7 +99,7 @@ export default function ParentForm({
     },
 
   ]
-  const [selectedMethod, setSelectedMethod] = useState<any>(null);
+  const [selectedMethod, setSelectedMethod] = useState<any>(ContactMethods[0]);
 
   //gender
   const genders = [
@@ -116,7 +113,7 @@ export default function ParentForm({
     },
 
   ]
-  const [selectedGender, setSelectedGender] = useState<any>(null);
+  const [selectedGender, setSelectedGender] = useState<any>(genders[0]);
 
   //Nationality
   const initialCountryCode = "UG";
@@ -131,7 +128,7 @@ export default function ParentForm({
     formState: { errors },
   } = useForm<ParentProps>({
     defaultValues: {
-      name: "",
+      firstName: "",
     },
   });
   const router = useRouter();
@@ -144,6 +141,11 @@ export default function ParentForm({
     try {
       setLoading(true);
       data.imageUrl = imageUrl;
+      data.title = selectedTitle.value;
+      data.relationship = selectedRelationship.value;
+      data.gender = selectedGender.value;
+      data.nationality = selectedNationality.label;
+      data.contactMethod = selectedMethod.value;
       console.log(data)
       if (editingId) {
         // await updateCategoryById(editingId, data);
@@ -153,12 +155,12 @@ export default function ParentForm({
         // router.push("/dashboard/categories");
         // setImageUrl("/placeholder.svg");
       } else {
-        // await createCategory(data);
-        // setLoading(false);
-        // toast.success("Successfully Created!");
-        // reset();
+        const res = await createParent(data);
+        setLoading(false);
+        toast.success("Successfully Created!");
+        reset();
         // setImageUrl("/placeholder.svg");
-        // router.push("/dashboard/categories");
+        router.push("/dashboard/users/parents");
       }
     } catch (error) {
       setLoading(false);
@@ -192,13 +194,13 @@ export default function ParentForm({
                 register={register}
                 errors={errors}
                 label="First Name"
-                name="firstname"
+                name="firstName"
               />
               <TextInput
                 register={register}
                 errors={errors}
                 label="Last Name"
-                name="lastname"
+                name="lastName"
               />
             </div>
             <div className="grid md:grid-cols-2  lg:grid-cols-3 gap-3">
@@ -264,8 +266,9 @@ export default function ParentForm({
               <TextInput
                 register={register}
                 errors={errors}
+                type="tel"
                 label="Whatsap No."
-                name="WhatsapNo"
+                name="whatsapNo"
               />
             </div>
 

@@ -11,7 +11,8 @@ import toast from "react-hot-toast";
 import PasswordInput from "@/components/FormInputs/PasswordInput";
 import FormSelectInput from "@/components/FormInputs/FormSelectInput";
 import countries from "@/countries";
-import { Class } from "@/types/types";
+import { Class, Parent } from "@/types/types";
+import { createStudent } from "@/actions/students";
 
 
 export type SelectOptionProps = {
@@ -22,32 +23,49 @@ type SingleStudentFormProps = {
   editingId?: string | undefined;
   initialData?: any | undefined | null;
   classes: Class[];
+  parents: Parent[];
 };
-export type StudentPops = {
+export type StudentProps = {
   name: string;
+  firstName: string;
+  lastName: string;
   email: string;
+  parentId: string;
+  parentName?: string;
+  classTitle?: string;
+  classId: string;
+  streamId: string;
+  streamTitle?: string;
   password: string;
   imageUrl: string;
+  phone: string;
+  state: string;
+  BCN: string;
+  nationality: string;
+  religion: string;
+  gender: string;
+  dob: string;
+  rollNo: string;
+  regNo: string;
+  admissionDate: string;
+  address: string; 
 }
 export default function SingleStudentForm({
   editingId,
   initialData,
-  classes
+  classes,
+  parents,
 }: SingleStudentFormProps) {
 
   //parents
-  const parents = [
-    {
-      label: "John Doe",
-      value: "123456"
-    },
-    {
-      label: "Allan Smith",
-      value: "12345678"
-    },
-
-  ]
+  const parentOptions = parents.map((parent)=>{
+    return{
+      label:`${parent.firstName} ${parent.lastName}`,
+      value:parent.id,
+    }
+  });
   const [selectedParent, setSelectedParent] = useState<any>(null);
+
 
   //class
   const classOptions = classes.map((item)=>{
@@ -80,7 +98,7 @@ export default function SingleStudentForm({
     },
 
   ]
-  const [selectedGender, setSelectedGender] = useState<any>(null);
+  const [selectedGender, setSelectedGender] = useState<any>(genders[0]);
 
   //Nationality
   const initialCountryCode = "UG";
@@ -103,7 +121,7 @@ export default function SingleStudentForm({
     },
 
   ]
-  const [selectedReligion, setSelectedReligion] = useState<any>(null);
+  const [selectedReligion, setSelectedReligion] = useState<any>(religions[0]);
 
 
 
@@ -114,7 +132,7 @@ export default function SingleStudentForm({
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<StudentPops>({
+  } = useForm<StudentProps>({
     defaultValues: {
       name: "",
     },
@@ -125,10 +143,20 @@ export default function SingleStudentForm({
   const initialImage = initialData?.imageUrl || "/images/student.png";
   const [imageUrl, setImageUrl] = useState(initialImage);
 
-  async function saveStudent(data: StudentPops) {
+  async function saveStudent(data: StudentProps) {
     try {
       setLoading(true);
       data.imageUrl = imageUrl;
+      data.name = `${data.firstName} ${data.lastName}`
+      data.parentId = selectedParent.value;
+      data.parentName = selectedParent.label;
+      data.classId = selectedClass.value;
+      data.classTitle = selectedClass.label;
+      data.streamId = selectedStream.value;
+      data.streamTitle = selectedStream.label;
+      data.nationality = selectedNationality.label;
+      data.religion = selectedReligion.value;
+      data.gender = selectedGender.value;
       console.log(data)
       if (editingId) {
         // await updateCategoryById(editingId, data);
@@ -138,12 +166,12 @@ export default function SingleStudentForm({
         // router.push("/dashboard/categories");
         // setImageUrl("/placeholder.svg");
       } else {
-        // await createCategory(data);
-        // setLoading(false);
-        // toast.success("Successfully Created!");
-        // reset();
+        const res = await createStudent(data);
+        setLoading(false);
+        toast.success("Successfully Created!");
+        reset();
         // setImageUrl("/placeholder.svg");
-        // router.push("/dashboard/categories");
+        router.push("/dashboard/students");
       }
     } catch (error) {
       setLoading(false);
@@ -171,13 +199,13 @@ export default function SingleStudentForm({
                 register={register}
                 errors={errors}
                 label="Student First Name"
-                name="firstname"
+                name="firstName"
               />
               <TextInput
                 register={register}
                 errors={errors}
                 label="StudentL ast Name"
-                name="lastname"
+                name="lastName"
               />
               <TextInput
                 register={register}
@@ -190,7 +218,7 @@ export default function SingleStudentForm({
             <div className="grid md:grid-cols-2  lg:grid-cols-3 gap-3">
               <FormSelectInput
                 label="Parent"
-                options={parents}
+                options={parentOptions}
                 option={selectedParent}
                 setOption={setSelectedParent}
                 toolTipText="Add New Parent"
@@ -291,6 +319,7 @@ export default function SingleStudentForm({
                     register={register}
                     errors={errors}
                     label="Admission Date"
+                    type="date"
                     name="admissionDate"
                   />
                 </div>
