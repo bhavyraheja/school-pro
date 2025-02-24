@@ -13,6 +13,7 @@ import FormSelectInput from "@/components/FormInputs/FormSelectInput";
 import countries from "@/countries";
 import { Class, Parent } from "@/types/types";
 import { createStudent } from "@/actions/students";
+import RadioInput from "@/components/FormInputs/RadioInput";
 
 
 export type SelectOptionProps = {
@@ -309,18 +310,18 @@ export default function SingleStudentForm({
             <div className="grid md:grid-cols-2 gap-3">
               <div>
                 <div className="grid gap-3">
-                  <TextInput
+                  {/* <TextInput
                     register={register}
                     errors={errors}
                     label="Registration No."
                     name="regNo"
-                  />
-                  <TextInput
-                    register={register}
-                    errors={errors}
-                    label="Admission Date"
-                    type="date"
-                    name="admissionDate"
+                  /> */}
+                  <RadioInput
+                     radioOptions ={}
+                     register = {register}
+                     label = "Student type"
+                     name="studentType"
+                     errors={errors}
                   />
                 </div>
                 <div className="grid gap-3">
