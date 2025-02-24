@@ -14,6 +14,7 @@ import countries from "@/countries";
 import { Class, Parent } from "@/types/types";
 import { createStudent } from "@/actions/students";
 import RadioInput from "@/components/FormInputs/RadioInput";
+import { generateRegistrationNumber } from "@/lib/generateRegNo";
 
 
 export type SelectOptionProps = {
@@ -143,7 +144,16 @@ export default function SingleStudentForm({
   const [loading, setLoading] = useState(false);
   const initialImage = initialData?.imageUrl || "/images/student.png";
   const [imageUrl, setImageUrl] = useState(initialImage);
-
+  const studentTypes = [
+    {
+      label: "Private Student",
+      id: "PS"
+    },
+    {
+      label: "Sponsored Student",
+      id: "SS"
+    }
+  ]
   async function saveStudent(data: StudentProps) {
     try {
       setLoading(true);
@@ -167,12 +177,14 @@ export default function SingleStudentForm({
         // router.push("/dashboard/categories");
         // setImageUrl("/placeholder.svg");
       } else {
-        const res = await createStudent(data);
-        setLoading(false);
-        toast.success("Successfully Created!");
-        reset();
+        const regNo = generateRegistrationNumber("BU","PS" , 1);
+        data.regNo = regNo
+        // const res = await createStudent(data);
+        // setLoading(false);
+        // toast.success("Successfully Created!");
+        // reset();
         // setImageUrl("/placeholder.svg");
-        router.push("/dashboard/students");
+        // router.push("/dashboard/students");
       }
     } catch (error) {
       setLoading(false);
@@ -317,11 +329,12 @@ export default function SingleStudentForm({
                     name="regNo"
                   /> */}
                   <RadioInput
-                     radioOptions ={}
+                     radioOptions ={studentTypes}
                      register = {register}
                      label = "Student type"
                      name="studentType"
                      errors={errors}
+                     defaultValue="PS"
                   />
                 </div>
                 <div className="grid gap-3">

@@ -32,3 +32,12 @@ export async function getAllStudents(){
         console.log(error)
     }
 }
+export async function getStudentNextSequence(){
+    try{
+        const response = await api.get("/students");
+        const students = response.data;
+        return students as Student[];
+    } catch(error){
+        console.log(error);
+    }
+}
